@@ -4,40 +4,65 @@
 
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
-// Declare the chart dimensions and margins.
-const width = 640;
-const height = 400;
-const marginTop = 20;
-const marginRight = 20;
-const marginBottom = 30;
-const marginLeft = 40;
+// set the dimensions and margins of the graph
+const margin = { top: 5, right: 5, bottom: 5, left: 5 },
+	width = document.querySelector("body").clientWidth,
+	height = document.querySelector("body").clientHeight;
 
-// Declare the x (horizontal position) scale.
-const x = d3.scaleUtc()
-    .domain([new Date("2023-01-01"), new Date("2024-01-01")])
-    .range([marginLeft, width - marginRight]);
+const svg = d3.select("#d3_demo").attr("viewBox", [0, 0, width, height]);
 
-// Declare the y (vertical position) scale.
-const y = d3.scaleLinear()
-    .domain([0, 100])
-    .range([height - marginBottom, marginTop]);
+let projection = d3.geoEquirectangular().center([0, 0]);
+const pathGenerator = d3.geoPath().projection(projection);
 
-// Create the SVG container.
-const svg = d3.create("svg")
-    .attr("width", width)
-    .attr("height", height);
+// add title
+svg
+	.append("text")
+	.attr("x", width / 1.4)
+	.attr("y", `${height - 20}`)
+	.style("font-size", "20x")
+	.style("text-decoration", "underline")
+	.text("Map of Nigeria and it's states ");
 
-// Add the x-axis.
-svg.append("g")
-    .attr("transform", `translate(0,${height - marginBottom})`)
-    .call(d3.axisBottom(x));
+let g = svg.append("g");
 
-// Add the y-axis.
-svg.append("g")
-    .attr("transform", `translate(${marginLeft},0)`)
-    .call(d3.axisLeft(y));
+Promise.all([
+	d3.json(
+		"https://raw.githubusercontent.com/iamspruce/intro-d3/main/data/nigeria_state_boundaries.geojson"
+	),
+	d3.json(
+		"https://raw.githubusercontent.com/iamspruce/intro-d3/main/data/nigeria-states.json"
+	)
+]).then(([geoJSONdata, countryData]) => {
+	countryData.data.forEach((d) => {
+		d.info.Longitude = +d.info.Longitude;
+		d.info.Latitude = +d.info.Latitude;
+	});
 
-// Append the SVG element.
-container.append(svg.node());
+	projection.fitSize([width, height], geoJSONdata);
+
+	g.selectAll("path")
+		.data(geoJSONdata.features)
+		.join("path")
+		.attr("class", "country")
+		.attr("d", pathGenerator);
+
+	g.selectAll("circle")
+		.data(countryData.data)
+		.join("circle")
+		.attr("cx", (d) => projection([d.info.Longitude, d.info.Latitude])[0])
+		.attr("cy", (d) => projection([d.info.Longitude, d.info.Latitude])[1])
+		.attr("r", 5)
+		.style("fill", "green");
+
+	g.selectAll("text")
+		.data(countryData.data)
+		.join("text")
+		.attr("x", (d) => projection([d.info.Longitude, d.info.Latitude])[0])
+		.attr("y", (d) => projection([d.info.Longitude, d.info.Latitude])[1])
+		.attr("dy", -7)
+		.style("fill", "black")
+		.attr("text-anchor", "middle")
+		.text((d) => d.Name);
+});
 
 </script>
