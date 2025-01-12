@@ -1,0 +1,9 @@
+body {
+	background: lightblue;
+	height: 100vh;
+}
+path {
+	stroke: #999;
+	stroke-width: 0.5px;
+	fill: #ebebe0;
+}
