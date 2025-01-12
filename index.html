@@ -16,12 +16,6 @@ const pathGenerator = d3.geoPath().projection(projection);
 
 // add title
 svg
-	.append("text")
-	.attr("x", width / 1.4)
-	.attr("y", `${height - 20}`)
-	.style("font-size", "20x")
-	.style("text-decoration", "underline")
-	.text("Map of Nigeria and it's states ");
 
 let g = svg.append("g");
 
@@ -71,6 +65,6 @@ Promise.all([
 </head>
 <body id="svg_wrapper">
 	<svg id="d3_demo"></svg>
-Hello, 4
+Hello, remove text
 </body>
 </html>
