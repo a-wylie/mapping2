@@ -21,7 +21,7 @@ let g = svg.append("g");
 
 Promise.all([
 	d3.json(
-		"canada-csd.geojson"
+		"https://github.com/codeforgermany/click_that_hood/raw/main/public/data/canada.geojson"
 	),
 	d3.json(
 		"https://raw.githubusercontent.com/iamspruce/intro-d3/main/data/nigeria-states.json"
@@ -65,6 +65,6 @@ Promise.all([
 </head>
 <body id="svg_wrapper">
 	<svg id="d3_demo"></svg>
-Hello, Canada?
+Hello, Canada??
 </body>
 </html>
